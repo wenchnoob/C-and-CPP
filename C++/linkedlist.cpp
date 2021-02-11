@@ -84,26 +84,28 @@ class LinkedList {
 		}
 		
 		Node<U>* removeFirst() {
+			if (this->head == NULL) return NULL;
 			Node<U> *temp = this->head;
 			this->head = this->head->getNext();
-			this->head->setPrev(NULL);
+			if (this->head != NULL) this->head->setPrev(NULL);
+			else this->tail = NULL;
 			temp->setPrev(NULL);
 			temp->setNext(NULL);
 			return temp;
 		}
 		
 		Node<U>* removeLast() {
+			if (this->tail == NULL) return NULL;
 			Node<U> *temp = this->tail;
 			this->tail = this->tail->getPrev();
-			this->tail->setNext(NULL);
+			if(this->tail != NULL) this->tail->setNext(NULL);
+			else this->head = NULL;
 			temp->setPrev(NULL);
 			temp->setNext(NULL);
-			return temp;
-			
+			return temp;	
 		}
 		
 		void print() {
-			cout << "printing" << endl;
 			Node<U> *cur = this->head;
 			while(cur != NULL) {
 				cout << cur->getVal() << " -> ";

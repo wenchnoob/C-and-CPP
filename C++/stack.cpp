@@ -17,7 +17,11 @@ class Stack {
 		
 		Node<T>* pop() {
 			return dbLinkedList->removeLast();
-		} 
+		}
+		
+		void print() {
+			dbLinkedList->print();
+		}
 };
 
 int main() {
@@ -26,8 +30,11 @@ int main() {
 	myStack.push(2);
 	myStack.push(3);
 	myStack.pop()->print();
+	myStack.print();
 	myStack.pop()->print();
+	myStack.print();
 	myStack.pop()->print();
+	return 0;
 }
 
 
