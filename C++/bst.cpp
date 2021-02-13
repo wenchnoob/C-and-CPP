@@ -7,10 +7,11 @@ template <class T>
 class TreeNode {
 	private:
 		T val;
+		TreeNode *parent;
 		TreeNode *left;
 		TreeNode *right;
 	public:
-		TreeNode(T val, TreeNode<T> *left = NULL, TreeNode<T> *right = NULL) {
+		TreeNode(T val, TreeNode<T> *left = NULL, TreeNode<T> *right = NULL, TreeNode<T> *parent = NULL) {
 			this->val = val;
 			this->left = left;
 			this->right = right;
@@ -28,12 +29,20 @@ class TreeNode {
 			return this->right;
 		}
 		
+		TreeNode<T>* getParent() {
+			return this->parent;
+		}
+		
 		void setLeft(TreeNode<T> *left) {
 			this->left = left;
 		}
 		
 		void setRight(TreeNode<T> *right) {
 			this->right = right;
+		}
+		
+		void setParent(TreeNode<T> *parent) {
+			this->parent = parent;
 		}
 		
 		void print() {
@@ -64,22 +73,93 @@ class BinaryTree {
 					if (from->getRight() != NULL) {
 						insert(val, from->getRight());
 					} else {
-						from->setRight(new TreeNode<U>(val));
+						from->setRight(new TreeNode<U>(val, NULL, NULL, from));
 						cout << val << " Inserted to the right of " << from->getVal() << endl;
 					}
-				} else {
+				} else if (val < from -> getVal()) {
 					if (from->getLeft() != NULL) {
 						insert(val, from->getLeft());
 					} else {
-						from->setLeft(new TreeNode<U>(val));
+						from->setLeft(new TreeNode<U>(val, NULL, NULL, from));
 						cout << val << " Inserted to the left of " << from->getVal() << endl;
 					}
 				}
 			}
 		}
 		
-		void printRoot() {
-			cout << this->root->getVal() << endl;
+		void insertNode(TreeNode<U> *src) {
+			if (src == NULL) return;
+			this->insert(src->getVal());
+			if (src->getRight() != NULL) insertNode(src->getRight());
+			if (src->getLeft() != NULL) insertNode(src->getLeft());
+		}
+		
+		TreeNode<U>* remove(U val, TreeNode<U> *from = NULL, bool traversed = false) {
+			if (this->root == NULL) throw "Empty tree exception";
+			
+			if (from == NULL) {
+				if (this->root->getVal() == val) {
+					TreeNode<U> *response = this->root;
+					if (this->root->getRight() != NULL) {
+						this->root = this->root->getRight();
+						this->root->setParent(NULL);
+						this->insertNode(response->getLeft());
+					} else {
+						this->root = this->root->getLeft();
+						this->root->setParent(NULL);
+					}
+					response->setLeft(NULL);
+					response->setRight(NULL);
+					return response;
+				}
+				
+				if(!traversed)return this->remove(val, this->root, true);
+			} else {
+				if(from->getRight()!= NULL) {
+					if (from->getRight()->getVal() == val) {
+						TreeNode<U> *response = from->getRight();
+						from->setRight(from->getRight()->getRight());
+						this->insertNode(response->getLeft());
+						response->setLeft(NULL);
+						response->setRight(NULL);
+						return response;
+					}
+				}
+				
+				if (from->getLeft() != NULL) {
+					if (from->getLeft()->getVal() == val) {
+						TreeNode<U> *response = from->getLeft();
+						from->setLeft(from->getLeft()->getRight());
+						this->insertNode(response->getLeft());
+						response->setLeft(NULL);
+						response->setRight(NULL);
+						return response;
+					}
+				}
+				return this->remove(val, from->getRight(), true);
+				return this->remove(val, from->getLeft(), true);
+			}
+			
+			return NULL;
+		}
+		
+		bool find(U val, TreeNode<U> *from = NULL, bool traversed = false) {
+			if (from == NULL) {
+				if (traversed) return false;
+				return find(val, this->root);
+			}
+			
+			U fromVal = from->getVal();
+			
+			if (fromVal == val){
+				return true;
+			}else if (val > fromVal) {
+				return find(val, from->getRight(), true);
+			}else {
+				return find(val, from->getLeft(), true);
+			}
+			
+			return false;
 		}
 		
 		void print() {
@@ -103,7 +183,20 @@ int main() {
 	myTree.insert(2);
 	myTree.insert(15);
 	myTree.insert(123);
+	myTree.insert(11);
+	myTree.insert(3);
+	myTree.insert(4);
+	myTree.insert(155);
 	
-	myTree.printRoot();
 	myTree.print();
+	myTree.remove(11);
+	myTree.print();
+	myTree.remove(12);
+	myTree.print();
+	
+	cout << 15 << ": " << myTree.find(15) <<endl;
+	cout << 11 << ": " << myTree.find(11) <<endl;
+	cout << 155 << ": " << myTree.find(155) <<endl;
+	cout << 12 << ": " << myTree.find(12) <<endl;
+
 }
