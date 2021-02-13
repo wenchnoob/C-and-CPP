@@ -55,6 +55,24 @@ class BinaryTree {
 	private:
 		TreeNode<U> *root;
 		
+		
+		
+		void printTreeFromNode(TreeNode<U> *node) {
+			if (node->getLeft() != NULL) printTreeFromNode(node->getLeft());
+			cout << node->getVal() << " ";
+			if (node->getRight() != NULL) printTreeFromNode(node->getRight());
+		}
+		
+		void invertNode(TreeNode<U> *src) {
+			if (src == NULL) return;
+			TreeNode<U> *temp = src->getRight();
+			src->setRight(src->getLeft());
+			src->setLeft(temp);
+			
+			invertNode(src->getRight());
+			invertNode(src->getLeft());
+		}
+		
 	public:
 		BinaryTree(TreeNode<U> *root = NULL) {
 			this->root = root;
@@ -162,16 +180,14 @@ class BinaryTree {
 			return false;
 		}
 		
+		void invert() {
+			if (this->root == NULL) return;
+			invertNode(this->root);
+		}
+		
 		void print() {
 			printTreeFromNode(this->root);
 			cout << endl;
-		}
-		
-		
-		void printTreeFromNode(TreeNode<U> *node) {
-			if (node->getLeft() != NULL) printTreeFromNode(node->getLeft());
-			cout << node->getVal() << " ";
-			if (node->getRight() != NULL) printTreeFromNode(node->getRight());
 		}
 
 };
@@ -198,5 +214,8 @@ int main() {
 	cout << 11 << ": " << myTree.find(11) <<endl;
 	cout << 155 << ": " << myTree.find(155) <<endl;
 	cout << 12 << ": " << myTree.find(12) <<endl;
+	
+	myTree.invert();
+	myTree.print();
 
 }
